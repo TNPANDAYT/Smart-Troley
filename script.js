@@ -4,25 +4,31 @@ const products = {
   "P103": { name: "Rice", price: 60 },
   "P104": { name: "Apple", price: 30 },
   "P105": { name: "Egg", price: 5 },
-  "p106": { name: "Oil", price: 50 },
-  "p107": { name: "Salt", price: 20 },
-  "p108": { name: "Honey", price: 150},
-  "p109": { name: "Curd", price: 40},
-  "p110": { name: "Juice", price: 50 },
+  "P106": { name: "Oil", price: 50 },
+  "P107": { name: "Salt", price: 20 },
+  "P108": { name: "Honey", price: 150 },
+  "P109": { name: "Curd", price: 40 },
+  "P110": { name: "Juice", price: 50 }
+};
 
-
-let cart = [];
+let cart = {};              // Store items with quantity
 let total = 0;
 let lastScanTime = 0;
-const delay = 2000; // 2-second delay
+const delay = 2000;         // 2-second delay between scans
 
-const cartList = document.getElementById("cart");
 const popup = document.getElementById("popup");
+const totalText = document.getElementById("total");
+const cartBody = document.getElementById("cart-body");
 
+// ✅ Add product to cart or increase quantity
 function addToCart(code) {
-  if (products[code]) {
-    cart.push(products[code]);
-    total += products[code].price;
+  const product = products[code];
+  if (product) {
+    if (cart[code]) {
+      cart[code].quantity += 1;
+    } else {
+      cart[code] = { ...product, quantity: 1 };
+    }
     updateCart();
     showPopup();
   } else {
@@ -30,21 +36,36 @@ function addToCart(code) {
   }
 }
 
+// ✅ Update cart table and total price
 function updateCart() {
-  cartList.innerHTML = "";
-  cart.forEach(item => {
-    const li = document.createElement("li");
-    li.textContent = `${item.name} - ₹${item.price}`;
-    cartList.appendChild(li);
+  cartBody.innerHTML = "";
+  total = 0;
+
+  Object.keys(cart).forEach(code => {
+    const item = cart[code];
+    const subtotal = item.price * item.quantity;
+    total += subtotal;
+
+    const row = document.createElement("tr");
+    row.innerHTML = `
+      <td>${item.name}</td>
+      <td>₹${item.price}</td>
+      <td>${item.quantity}</td>
+      <td>₹${subtotal}</td>
+    `;
+    cartBody.appendChild(row);
   });
+
   totalText.textContent = `Total: ₹${total}`;
 }
 
+// ✅ Popup animation
 function showPopup() {
   popup.style.display = "block";
   setTimeout(() => { popup.style.display = "none"; }, 1800);
 }
 
+// ✅ QR Code Scanner Setup
 const html5QrCode = new Html5Qrcode("qr-reader");
 
 html5QrCode.start(
@@ -53,9 +74,11 @@ html5QrCode.start(
   qrCodeMessage => {
     const now = Date.now();
     if (now - lastScanTime > delay) {
-      addToCart(qrCodeMessage);
+      addToCart(qrCodeMessage.trim());
       lastScanTime = now;
     }
   },
-  error => {}
+  error => {
+    // Ignore scan errors to keep scanner running
+  }
 ).catch(err => console.error("Camera start failed:", err));
