@@ -2,8 +2,14 @@ const products = {
   "P101": { name: "Milk", price: 25 },
   "P102": { name: "Bread", price: 40 },
   "P103": { name: "Rice", price: 60 },
-  "P104": { name: "Apple", price: 30 }
-};
+  "P104": { name: "Apple", price: 30 },
+  "P105": { name: "Egg", price: 5 },
+  "p106": { name: "Oil", price: 50 },
+  "p107": { name: "Salt", price: 20 },
+  "p108": { name: "Honey", price: 150},
+  "p109": { name: "Curd", price: 40},
+  "p110": { name: "Juice", price: 50 },
+
 
 let cart = [];
 let total = 0;
@@ -11,7 +17,6 @@ let lastScanTime = 0;
 const delay = 2000; // 2-second delay
 
 const cartList = document.getElementById("cart");
-const totalText = document.getElementById("total");
 const popup = document.getElementById("popup");
 
 function addToCart(code) {
