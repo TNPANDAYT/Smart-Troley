@@ -75,3 +75,18 @@ header {
   80% { opacity: 1; bottom: 30px; }
   100% { opacity: 0; bottom: 40px; }
 }
+#cart {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+#cart th, #cart td {
+  padding: 8px;
+  border-bottom: 1px solid #ddd;
+  text-align: center;
+}
+
+#cart th {
+  background: #0078d7;
+  color: white;
+}
