@@ -5,7 +5,7 @@ const products = {
   "P104": { name: "Apple", price: 30 },
   "P105": { name: "Egg", price: 5 },
   "P106": { name: "Oil", price: 50 },
-  "P107": { name: "Salt", price: 20 },
+  "P107": { name: "Good Day ", price: 20 },
   "P108": { name: "Honey", price: 150 },
   "P109": { name: "hide and seek ", price: 40 },
   "P110": { name: "Juice", price: 50 }
