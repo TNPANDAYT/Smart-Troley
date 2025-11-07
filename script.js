@@ -1,5 +1,5 @@
 const products = {
-  "P101": { name: "Milk", price: 25 },
+  "P101": { name: "Milk Biscuit", price: 25 },
   "P102": { name: "Bread", price: 40 },
   "P103": { name: "Rice", price: 60 },
   "P104": { name: "Apple", price: 30 },
