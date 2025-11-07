@@ -1,14 +1,14 @@
 const products = {
-  "P101": { name: "Milk Biscuit", price: 25 },
-  "P102": { name: "Good day", price: 40 },
+  "P101": { name: "Milk Biscuit", price: 15 },
+  "P102": { name: "Good day", price: 10 },
   "P103": { name: "Nabati", price: 10 },
   "P104": { name: "Apple", price: 30 },
   "P105": { name: "Egg", price: 5 },
   "P106": { name: "Oil", price: 50 },
   "P107": { name: "Good Day ", price: 20 },
-  "P108": { name: "Honey", price: 150 },
-  "P109": { name: "hide and seek ", price: 40 },
-  "P110": { name: "Juice", price: 50 }
+  "P108": { name: "Bourbon", price: 10 },
+  "P109": { name: "hide and seek ", price: 30 },
+  "P110": { name: "Juice", price: 20 }
 };
 
 let cart = {};              // Store items with quantity
