@@ -1,42 +1,66 @@
+// 🔹 Product database (use real barcode numbers)
 const products = {
-  "P101": { name: "Milk Biscuit", price: 15 },
-  "P102": { name: "Good day", price: 10 },
-  "P103": { name: "Nabati", price: 10 },
-  "P104": { name: "Apple", price: 30 },
-  "P105": { name: "Egg", price: 5 },
-  "P106": { name: "Oil", price: 50 },
-  "P107": { name: "Good Day ", price: 20 },
-  "P108": { name: "Bourbon", price: 10 },
-  "P109": { name: "hide and seek ", price: 30 },
-  "P110": { name: "Juice", price: 20 }
+  "8901725015275": { name: "Dark fantasy", price: 10 },
+  "8901234567890": { name: "Milk Biscuit", price: 15 },
+  "P101": { name: "Apple", price: 30 }
 };
 
-let cart = {};              // Store items with quantity
+let cart = {};
 let total = 0;
 let lastScanTime = 0;
-const delay = 2000;         // 2-second delay between scans
+const delay = 2000;
 
+// Elements
 const popup = document.getElementById("popup");
 const totalText = document.getElementById("total");
 const cartBody = document.getElementById("cart-body");
+const scanStatus = document.getElementById("scan-status");
 
-// ✅ Add product to cart or increase quantity
+// 🔊 Sound
+const beep = new Audio("https://www.soundjay.com/buttons/beep-01a.mp3");
+
+// ✅ Add to cart
 function addToCart(code) {
   const product = products[code];
+
   if (product) {
     if (cart[code]) {
-      cart[code].quantity += 1;
+      cart[code].quantity++;
     } else {
       cart[code] = { ...product, quantity: 1 };
     }
+
+    scanStatus.textContent = "Scanned: " + product.name;
+    beep.play();
     updateCart();
     showPopup();
   } else {
-    alert("❌ Unknown product: " + code);
+    alert("❌ Product not found: " + code);
   }
 }
 
-// ✅ Update cart table and total price
+// ➕ Increase
+function increaseItem(code) {
+  cart[code].quantity++;
+  updateCart();
+}
+
+// ➖ Decrease
+function decreaseItem(code) {
+  cart[code].quantity--;
+  if (cart[code].quantity <= 0) {
+    delete cart[code];
+  }
+  updateCart();
+}
+
+// ❌ Remove item
+function removeItem(code) {
+  delete cart[code];
+  updateCart();
+}
+
+// 🔄 Update cart
 function updateCart() {
   cartBody.innerHTML = "";
   total = 0;
@@ -47,38 +71,110 @@ function updateCart() {
     total += subtotal;
 
     const row = document.createElement("tr");
+
     row.innerHTML = `
       <td>${item.name}</td>
       <td>₹${item.price}</td>
-      <td>${item.quantity}</td>
+      <td>
+        <button onclick="decreaseItem('${code}')">-</button>
+        ${item.quantity}
+        <button onclick="increaseItem('${code}')">+</button>
+      </td>
       <td>₹${subtotal}</td>
+      <td>
+        <button onclick="removeItem('${code}')">❌</button>
+      </td>
     `;
+
     cartBody.appendChild(row);
   });
 
-  totalText.textContent = `Total: ₹${total}`;
+  totalText.textContent = "Total: ₹" + total;
 }
 
-// ✅ Popup animation
+// ✅ Popup
 function showPopup() {
   popup.style.display = "block";
-  setTimeout(() => { popup.style.display = "none"; }, 1800);
+  setTimeout(() => {
+    popup.style.display = "none";
+  }, 1500);
 }
 
-// ✅ QR Code Scanner Setup
+//
+// 🧾 PDF BILL 
+//GENERATION
+function generateBill() {
+  if (Object.keys(cart).length === 0) {
+    alert("Cart is empty!");
+    return;
+  }
+
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF();
+
+  // 🏪 Title
+  doc.setFontSize(16);
+  doc.text("SMART TROLLEY BILL", 14, 15);
+
+  doc.setFontSize(10);
+  doc.text("Date: " + new Date().toLocaleString(), 14, 22);
+
+  // 📊 Table data
+  const tableData = [];
+
+  Object.values(cart).forEach(item => {
+    tableData.push([
+      item.name,
+      "₹" + item.price,
+      item.quantity,
+      "₹" + (item.price * item.quantity)
+    ]);
+  });
+
+  // 🧾 Table
+  doc.autoTable({
+    startY: 30,
+    head: [["Product", "Price", "Qty", "Subtotal"]],
+    body: tableData
+  });
+
+  // 💰 Total (below table)
+  const finalY = doc.lastAutoTable.finalY + 10;
+
+  doc.setFontSize(12);
+  doc.text("Total: ₹" + total, 14, finalY);
+
+  doc.setFontSize(10);
+  doc.text("Thank you for shopping!", 14, finalY + 8);
+
+  // 📄 Save PDF
+  doc.save("Smart_Trolley_Bill.pdf");
+}
+
+// 📷 Scanner
 const html5QrCode = new Html5Qrcode("qr-reader");
 
 html5QrCode.start(
   { facingMode: "environment" },
-  { fps: 10, qrbox: 250 },
-  qrCodeMessage => {
+  {
+    fps: 10,
+    qrbox: 250,
+    formatsToSupport: [
+      Html5QrcodeSupportedFormats.QR_CODE,
+      Html5QrcodeSupportedFormats.CODE_128,
+      Html5QrcodeSupportedFormats.EAN_13,
+      Html5QrcodeSupportedFormats.EAN_8
+    ]
+  },
+  (decodedText) => {
     const now = Date.now();
+
     if (now - lastScanTime > delay) {
-      addToCart(qrCodeMessage.trim());
+      addToCart(decodedText.trim());
       lastScanTime = now;
     }
   },
-  error => {
-    // Ignore scan errors to keep scanner running
-  }
-).catch(err => console.error("Camera start failed:", err));
+  () => {}
+).catch(err => {
+  console.error("Camera error:", err);
+});
