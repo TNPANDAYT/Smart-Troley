@@ -7,12 +7,12 @@
 
   <link rel="stylesheet" href="style.css" />
 
-  <!-- QR + Barcode Scanner -->
+  <!-- Scanner Library -->
   <script src="https://unpkg.com/html5-qrcode"></script>
 
-  <!-- PDF Library -->
+  <!-- PDF Libraries -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.31/jspdf.plugin.autotable.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.31/jspdf.plugin.autotable.min.js"></script>
 </head>
 
 <body>
@@ -21,66 +21,44 @@
   </header>
 
   <main>
-    <!-- Scanner -->
+
+    <!-- 📷 Scanner Section -->
     <section id="scanner-section">
-      <div id="qr-reader"></div>
+      <div id="qr-reader" style="width:300px;"></div>
+
+      <button onclick="startScanner()">📷 Start Scanner</button>
+      <button onclick="stopScanner()">⛔ Stop</button>
+      <button onclick="generateBill()">🧾 Generate Bill</button>
+
       <p id="scan-status">Scan a product barcode</p>
     </section>
 
-    <!-- Cart -->
+    <!-- 🛒 Cart Section -->
     <section id="cart-section">
       <h2>🧾 Your Cart</h2>
 
-      <table id="cart">
+      <table id="cart" border="1">
         <thead>
           <tr>
             <th>Product</th>
             <th>Price</th>
             <th>Qty</th>
             <th>Subtotal</th>
-            <th>Remove</th>
+            <th>Action</th>
           </tr>
         </thead>
         <tbody id="cart-body"></tbody>
       </table>
 
       <h3 id="total">Total: ₹0</h3>
-<!-- Scanner -->
-<div id="qr-reader" style="width:300px;"></div>
-
-<button onclick="startScanner()">📷 Start Scanner</button>
-<button onclick="stopScanner()">⛔ Stop</button>
-<button onclick="generateBill()">🧾 Generate Bill</button>
-
-<p id="scan-status"></p>
-
-<table border="1">
-  <thead>
-    <tr>
-      <th>Product</th>
-      <th>Price</th>
-      <th>Qty</th>
-      <th>Subtotal</th>
-      <th>Action</th>
-    </tr>
-  </thead>
-  <tbody id="cart-body"></tbody>
-</table>
-
-<h3 id="total">Total: ₹0</h3>
-
-<div id="popup" style="display:none;">Added!</div>
-
-<!-- Libraries -->
-<script src="https://unpkg.com/html5-qrcode"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.23/jspdf.plugin.autotable.min.js"></script>
     </section>
+
   </main>
 
   <!-- Popup -->
-  <div id="popup">✅ Product Added</div>
+  <div id="popup" style="display:none;">✅ Product Added</div>
 
+  <!-- Your JS -->
   <script src="script.js"></script>
 </body>
 </html>
