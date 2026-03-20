@@ -1,23 +1,24 @@
 // 🔹 Product database
 const products = {
-  "8901725015275": { name: "Dark fantasy", price: 10 },
+  "8901725015275": { name: "Dark Fantasy", price: 10 },
   "8901234567890": { name: "Milk Biscuit", price: 15 },
-  "P101": { name: "Apple", price: 30 }
+  "123456789012": { name: "Sample Product", price: 20 }
 };
 
 let cart = {};
 let total = 0;
 let lastScanTime = 0;
-const delay = 2000;
+const delay = 1500;
 
-// 🔹 Elements
-const popup = document.getElementById("popup");
-const totalText = document.getElementById("total");
-const cartBody = document.getElementById("cart-body");
-const scanStatus = document.getElementById("scan-status");
+let scannerRunning = false;
 
 // 🔊 Sound
 const beep = new Audio("https://www.soundjay.com/buttons/beep-01a.mp3");
+
+// 🔹 Elements
+const cartBody = document.getElementById("cart-body");
+const totalText = document.getElementById("total");
+const scanStatus = document.getElementById("scan-status");
 
 // ✅ Add to cart
 function addToCart(code) {
@@ -31,11 +32,11 @@ function addToCart(code) {
     }
 
     scanStatus.textContent = "Scanned: " + product.name;
-    beep.play();
+
+    beep.play().catch(() => {});
     updateCart();
-    showPopup();
   } else {
-    alert("❌ Product not found: " + code);
+    scanStatus.textContent = "❌ Not found: " + code;
   }
 }
 
@@ -48,9 +49,7 @@ function increaseItem(code) {
 // ➖ Decrease
 function decreaseItem(code) {
   cart[code].quantity--;
-  if (cart[code].quantity <= 0) {
-    delete cart[code];
-  }
+  if (cart[code].quantity <= 0) delete cart[code];
   updateCart();
 }
 
@@ -60,7 +59,7 @@ function removeItem(code) {
   updateCart();
 }
 
-// 🔄 Update cart table
+// 🔄 Update Cart
 function updateCart() {
   cartBody.innerHTML = "";
   total = 0;
@@ -92,15 +91,7 @@ function updateCart() {
   totalText.textContent = "Total: ₹" + total;
 }
 
-// ✅ Popup
-function showPopup() {
-  popup.style.display = "block";
-  setTimeout(() => {
-    popup.style.display = "none";
-  }, 1500);
-}
-
-// 🧾 PDF BILL GENERATION
+// 🧾 Generate PDF Bill
 function generateBill() {
   if (Object.keys(cart).length === 0) {
     alert("Cart is empty!");
@@ -110,14 +101,12 @@ function generateBill() {
   const { jsPDF } = window.jspdf;
   const doc = new jsPDF();
 
-  // 🏪 Title
   doc.setFontSize(16);
   doc.text("SMART TROLLEY BILL", 14, 15);
 
   doc.setFontSize(10);
   doc.text("Date: " + new Date().toLocaleString(), 14, 22);
 
-  // 📊 Table Data
   const tableData = [];
 
   Object.values(cart).forEach(item => {
@@ -129,7 +118,6 @@ function generateBill() {
     ]);
   });
 
-  // 🧾 Table
   doc.autoTable({
     startY: 30,
     head: [["Product", "Price", "Qty", "Subtotal"]],
@@ -137,58 +125,73 @@ function generateBill() {
     theme: "grid"
   });
 
-  // 💰 Total
   const finalY = doc.lastAutoTable.finalY + 10;
 
   doc.setFontSize(12);
   doc.text("Total: ₹" + total, 14, finalY);
 
-  doc.setFontSize(10);
-  doc.text("Thank you for shopping!", 14, finalY + 8);
-
-  // 📄 Save
   doc.save("Smart_Trolley_Bill.pdf");
 }
 
-// 📷 SCANNER (FIXED FOR ALL DEVICES)
-let html5QrCode;
-
+// 📷 START SCANNER (Quagga)
 function startScanner() {
-  html5QrCode = new Html5Qrcode("qr-reader");
+  if (scannerRunning) {
+    alert("Scanner already running");
+    return;
+  }
 
-  html5QrCode.start(
-    { facingMode: "environment" }, // ✅ works everywhere
-    {
-      fps: 10,
-      qrbox: 250,
-      aspectRatio: 1.0,
-      formatsToSupport: [
-        Html5QrcodeSupportedFormats.QR_CODE,
-        Html5QrcodeSupportedFormats.CODE_128,
-        Html5QrcodeSupportedFormats.EAN_13,
-        Html5QrcodeSupportedFormats.EAN_8
-      ]
-    },
-    (decodedText) => {
-      const now = Date.now();
-
-      if (now - lastScanTime > delay) {
-        addToCart(decodedText.trim());
-        lastScanTime = now;
+  Quagga.init({
+    inputStream: {
+      type: "LiveStream",
+      target: document.querySelector("#qr-reader"),
+      constraints: {
+        facingMode: "environment",
+        width: 640,
+        height: 480
       }
     },
-    (error) => {}
-  ).catch(err => {
-    alert("Camera error: " + err);
-    console.error(err);
+    locator: {
+      patchSize: "medium",
+      halfSample: true
+    },
+    numOfWorkers: navigator.hardwareConcurrency || 4,
+    decoder: {
+      readers: [
+        "ean_reader",
+        "ean_8_reader",
+        "code_128_reader",
+        "upc_reader",
+        "upc_e_reader"
+      ]
+    },
+    locate: true
+  }, function(err) {
+    if (err) {
+      console.error(err);
+      alert("Camera error: " + err);
+      return;
+    }
+
+    Quagga.start();
+    scannerRunning = true;
+  });
+
+  // 🔥 Detect barcode
+  Quagga.onDetected(function(result) {
+    const code = result.codeResult.code;
+
+    const now = Date.now();
+    if (now - lastScanTime > delay) {
+      addToCart(code);
+      lastScanTime = now;
+    }
   });
 }
 
-// ⛔ Stop scanner (optional)
+// ⛔ Stop Scanner
 function stopScanner() {
-  if (html5QrCode) {
-    html5QrCode.stop().then(() => {
-      console.log("Scanner stopped");
-    }).catch(err => console.error(err));
+  if (scannerRunning) {
+    Quagga.stop();
+    scannerRunning = false;
   }
 }
