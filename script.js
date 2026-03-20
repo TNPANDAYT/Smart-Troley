@@ -184,6 +184,7 @@ function startScanner() {
     if (now - lastScanTime > delay) {
       addToCart(code);
       lastScanTime = now;
+      alert(result.codeResult.code);
     }
   });
 }
