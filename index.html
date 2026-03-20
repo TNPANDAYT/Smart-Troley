@@ -45,8 +45,36 @@
       </table>
 
       <h3 id="total">Total: ₹0</h3>
-     <button onclick="startScanner()">📷 Start Scanner</button>
-      <button onclick="generateBill()">🧾 Generate PDF Bill</button>
+<!-- Scanner -->
+<div id="qr-reader" style="width:300px;"></div>
+
+<button onclick="startScanner()">📷 Start Scanner</button>
+<button onclick="stopScanner()">⛔ Stop</button>
+<button onclick="generateBill()">🧾 Generate Bill</button>
+
+<p id="scan-status"></p>
+
+<table border="1">
+  <thead>
+    <tr>
+      <th>Product</th>
+      <th>Price</th>
+      <th>Qty</th>
+      <th>Subtotal</th>
+      <th>Action</th>
+    </tr>
+  </thead>
+  <tbody id="cart-body"></tbody>
+</table>
+
+<h3 id="total">Total: ₹0</h3>
+
+<div id="popup" style="display:none;">Added!</div>
+
+<!-- Libraries -->
+<script src="https://unpkg.com/html5-qrcode"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.23/jspdf.plugin.autotable.min.js"></script>
     </section>
   </main>
 
