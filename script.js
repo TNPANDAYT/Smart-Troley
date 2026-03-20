@@ -152,7 +152,6 @@ function generateBill() {
 }
 
 // 📷 Scanner
-const html5QrCode = new Html5Qrcode("qr-reader");
 
 let html5QrCode;
 
