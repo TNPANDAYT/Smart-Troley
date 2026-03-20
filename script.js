@@ -154,27 +154,29 @@ function generateBill() {
 // 📷 Scanner
 const html5QrCode = new Html5Qrcode("qr-reader");
 
-html5QrCode.start(
-  { facingMode: "environment" },
-  {
-    fps: 10,
-    qrbox: 250,
-    formatsToSupport: [
-      Html5QrcodeSupportedFormats.QR_CODE,
-      Html5QrcodeSupportedFormats.CODE_128,
-      Html5QrcodeSupportedFormats.EAN_13,
-      Html5QrcodeSupportedFormats.EAN_8
-    ]
-  },
-  (decodedText) => {
-    const now = Date.now();
+let html5QrCode;
 
-    if (now - lastScanTime > delay) {
-      addToCart(decodedText.trim());
-      lastScanTime = now;
-    }
-  },
-  () => {}
-).catch(err => {
-  console.error("Camera error:", err);
-});
+function startScanner() {
+  html5QrCode = new Html5Qrcode("qr-reader");
+
+  html5QrCode.start(
+    { facingMode: { exact: "environment" } }, // 👈 important for iPhone
+    {
+      fps: 10,
+      qrbox: 250,
+      aspectRatio: 1.0
+    },
+    (decodedText) => {
+      const now = Date.now();
+
+      if (now - lastScanTime > delay) {
+        addToCart(decodedText.trim());
+        lastScanTime = now;
+      }
+    },
+    () => {}
+  ).catch(err => {
+    alert("Camera error: " + err);
+    console.error(err);
+  });
+}
