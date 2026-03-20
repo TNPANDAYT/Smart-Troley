@@ -1,4 +1,4 @@
-// 🔹 Product database (use real barcode numbers)
+// 🔹 Product database
 const products = {
   "8901725015275": { name: "Dark fantasy", price: 10 },
   "8901234567890": { name: "Milk Biscuit", price: 15 },
@@ -10,7 +10,7 @@ let total = 0;
 let lastScanTime = 0;
 const delay = 2000;
 
-// Elements
+// 🔹 Elements
 const popup = document.getElementById("popup");
 const totalText = document.getElementById("total");
 const cartBody = document.getElementById("cart-body");
@@ -54,13 +54,13 @@ function decreaseItem(code) {
   updateCart();
 }
 
-// ❌ Remove item
+// ❌ Remove
 function removeItem(code) {
   delete cart[code];
   updateCart();
 }
 
-// 🔄 Update cart
+// 🔄 Update cart table
 function updateCart() {
   cartBody.innerHTML = "";
   total = 0;
@@ -100,9 +100,7 @@ function showPopup() {
   }, 1500);
 }
 
-//
-// 🧾 PDF BILL 
-//GENERATION
+// 🧾 PDF BILL GENERATION
 function generateBill() {
   if (Object.keys(cart).length === 0) {
     alert("Cart is empty!");
@@ -119,7 +117,7 @@ function generateBill() {
   doc.setFontSize(10);
   doc.text("Date: " + new Date().toLocaleString(), 14, 22);
 
-  // 📊 Table data
+  // 📊 Table Data
   const tableData = [];
 
   Object.values(cart).forEach(item => {
@@ -135,10 +133,11 @@ function generateBill() {
   doc.autoTable({
     startY: 30,
     head: [["Product", "Price", "Qty", "Subtotal"]],
-    body: tableData
+    body: tableData,
+    theme: "grid"
   });
 
-  // 💰 Total (below table)
+  // 💰 Total
   const finalY = doc.lastAutoTable.finalY + 10;
 
   doc.setFontSize(12);
@@ -147,23 +146,28 @@ function generateBill() {
   doc.setFontSize(10);
   doc.text("Thank you for shopping!", 14, finalY + 8);
 
-  // 📄 Save PDF
+  // 📄 Save
   doc.save("Smart_Trolley_Bill.pdf");
 }
 
-// 📷 Scanner
-
+// 📷 SCANNER (FIXED FOR ALL DEVICES)
 let html5QrCode;
 
 function startScanner() {
   html5QrCode = new Html5Qrcode("qr-reader");
 
   html5QrCode.start(
-    { facingMode: { exact: "environment" } }, // 👈 important for iPhone
+    { facingMode: "environment" }, // ✅ works everywhere
     {
       fps: 10,
       qrbox: 250,
-      aspectRatio: 1.0
+      aspectRatio: 1.0,
+      formatsToSupport: [
+        Html5QrcodeSupportedFormats.QR_CODE,
+        Html5QrcodeSupportedFormats.CODE_128,
+        Html5QrcodeSupportedFormats.EAN_13,
+        Html5QrcodeSupportedFormats.EAN_8
+      ]
     },
     (decodedText) => {
       const now = Date.now();
@@ -173,9 +177,18 @@ function startScanner() {
         lastScanTime = now;
       }
     },
-    () => {}
+    (error) => {}
   ).catch(err => {
     alert("Camera error: " + err);
     console.error(err);
   });
+}
+
+// ⛔ Stop scanner (optional)
+function stopScanner() {
+  if (html5QrCode) {
+    html5QrCode.stop().then(() => {
+      console.log("Scanner stopped");
+    }).catch(err => console.error(err));
+  }
 }
