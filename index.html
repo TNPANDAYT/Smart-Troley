@@ -1,115 +1,52 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Smart Trolley</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Smart Trolley - QR Scanner</title>
 
-  <!-- Barcode Scanner (Quagga2) -->
-  <script src="https://unpkg.com/@ericblade/quagga2/dist/quagga.min.js"></script>
-
-  <!-- PDF -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.31/jspdf.plugin.autotable.min.js"></script>
-
-  <style>
-    body {
-      font-family: Arial;
-      text-align: center;
-      background: #f5f5f5;
-    }
-
-    h1 {
-      margin-top: 20px;
-    }
-
-    #qr-reader {
-      width: 320px;
-      height: 240px;
-      margin: 20px auto;
-      border: 2px solid #333;
-    }
-
-    button {
-      padding: 10px 15px;
-      margin: 5px;
-      cursor: pointer;
-      border: none;
-      background: #333;
-      color: white;
-      border-radius: 5px;
-    }
-
-    button:hover {
-      background: #555;
-    }
-
-    table {
-      margin: 20px auto;
-      border-collapse: collapse;
-      width: 80%;
-      background: white;
-    }
-
-    th, td {
-      border: 1px solid #ccc;
-      padding: 10px;
-    }
-
-    th {
-      background: #eee;
-    }
-
-    #popup {
-      display: none;
-      color: green;
-      font-weight: bold;
-      margin-top: 10px;
-    }
-
-    #scan-status {
-      margin-top: 10px;
-      font-weight: bold;
-    }
-  </style>
+  <link rel="stylesheet" href="style/style.css" />
+  <script src="https://unpkg.com/html5-qrcode"></script>
 </head>
-
 <body>
 
+<header>
   <h1>🛒 Smart Trolley</h1>
+</header>
 
-  <!-- 📷 Scanner -->
-  <div id="qr-reader"></div>
+<main>
 
-  <div>
-    <button onclick="startScanner()">📷 Start Scanner</button>
-    <button onclick="stopScanner()">⛔ Stop</button>
-    <button onclick="generateBill()">🧾 Generate Bill</button>
-  </div>
+  <!-- Scanner -->
+  <section id="scanner-section">
+    <div id="qr-reader"></div>
+    <p id="scan-status">Scan a product QR code</p>
+  </section>
 
-  <p id="scan-status">Scan a barcode</p>
-  <div id="popup">✅ Product Added</div>
+  <!-- Cart -->
+  <section id="cart-section">
+    <h2>🧾 Your Cart</h2>
 
-  <!-- 🛒 Cart -->
-  <h2>🧾 Your Cart</h2>
+    <table id="cart">
+      <thead>
+        <tr>
+          <th>Product</th>
+          <th>Price</th>
+          <th>Qty</th>
+          <th>Subtotal</th>
+        </tr>
+      </thead>
+      <tbody id="cart-body"></tbody>
+    </table>
 
-  <table>
-    <thead>
-      <tr>
-        <th>Product</th>
-        <th>Price</th>
-        <th>Qty</th>
-        <th>Subtotal</th>
-        <th>Action</th>
-      </tr>
-    </thead>
-    <tbody id="cart-body"></tbody>
-  </table>
+    <h3 id="total">Total: ₹0</h3>
+  </section>
 
-  <h3 id="total">Total: ₹0</h3>
+</main>
 
-  <!-- Your JS -->
-  <script src="script.js"></script>
+<!-- Popup -->
+<div id="popup">✅ Product Added</div>
+
+<script src="script.js"></script>
 
 </body>
 </html>
