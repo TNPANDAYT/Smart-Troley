@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Smart Trolley</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <link rel="stylesheet" href="style.css">
+
+  <!-- Quagga (Barcode) -->
+  <script src="https://unpkg.com/@ericblade/quagga2/dist/quagga.min.js"></script>
+
+  <!-- PDF -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.31/jspdf.plugin.autotable.min.js"></script>
+</head>
+
+<body>
+
+<h1>🛒 Smart Trolley</h1>
+
+<div id="qr-reader"></div>
+
+<button onclick="startScanner()">📷 Start</button>
+<button onclick="stopScanner()">⛔ Stop</button>
+<button onclick="generateBill()">🧾 Bill</button>
+
+<p id="scan-status">Waiting...</p>
+<div id="popup">✅ Added</div>
+
+<h2>Cart</h2>
+
+<table>
+  <thead>
+    <tr>
+      <th>Product</th>
+      <th>Price</th>
+      <th>Qty</th>
+      <th>Subtotal</th>
+      <th>Action</th>
+    </tr>
+  </thead>
+  <tbody id="cart-body"></tbody>
+</table>
+
+<h3 id="total">Total: ₹0</h3>
+
+<script src="script.js"></script>
+
+</body>
+</html>
